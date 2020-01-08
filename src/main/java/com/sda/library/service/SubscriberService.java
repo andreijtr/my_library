@@ -40,7 +40,7 @@ public class SubscriberService {
         return subscriberDTOList;
     }
 
-    private SubscriberDTO convertSubscriberToSubscriberDTO(Subscriber subscriber) {
+    public SubscriberDTO convertSubscriberToSubscriberDTO(Subscriber subscriber) {
         SubscriberDTO subscriberDTO = new SubscriberDTO();
         subscriberDTO.setFirstName(subscriber.getFirstName());
         subscriberDTO.setSurname(subscriber.getSurname());

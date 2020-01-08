@@ -85,7 +85,7 @@ public class BookService {
         return bookDTOList;
     }
 
-    private BookDTO convertBookToBookDTO(Book book) {
+    public BookDTO convertBookToBookDTO(Book book) {
         BookDTO bookDTO = new BookDTO();
 
         bookDTO.setTitle(book.getTitle());
