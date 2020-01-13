@@ -3,6 +3,7 @@ package com.sda.library.repository;
 import com.sda.library.config.HibernateUtil;
 import com.sda.library.entities.Author;
 import com.sda.library.entities.Book;
+import com.sda.library.exceptions.book.CountBooksException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
@@ -18,13 +19,12 @@ public class BookDAO {
         Transaction transaction = session.beginTransaction();
 
         //I used FETCH TYPE LAZY, so i will use a join query to bound books and authors
-        String hqlJoin = "select b from Book b join fetch b.authors";
-        Query query = session.createQuery(hqlJoin);
-        List<Book> booksQuery = query.getResultList();
+        Query query = session.createNamedQuery("BOOKS_allBooks", Book.class);
+        List<Book> bookList = query.getResultList();
 
         transaction.commit();
         session.close();
-        return booksQuery;
+        return bookList;
     }
 
     public List<Book> findListByTitle(String titleWords) {
@@ -115,6 +115,38 @@ public class BookDAO {
         transaction.commit();
         session.close();
         return book;
+    }
+
+    public void updateBook(Book newBook) throws CountBooksException {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        //1.find if book is in DB, using count because takes smaller time than fetching. fetch only if is unique
+        Query countQuery = session.createNamedQuery("BOOKS_count");
+        countQuery.setParameter("title", newBook.getTitle());
+        countQuery.setParameter("volume", newBook.getVolume());
+        Long countResult = (Long) countQuery.getSingleResult();
+
+        //2.if result is unique, fetch book from db, update fields, persistbook
+        if (countResult == 1) {
+            Query findQuery = session.createNamedQuery("BOOKS_byTitleAndVolume");
+            findQuery.setParameter("title", newBook.getTitle());
+            findQuery.setParameter("volume", newBook.getVolume());
+            Book bookToUpdate = (Book) findQuery.getSingleResult();
+
+            bookToUpdate.setTitle(newBook.getTitle());
+            bookToUpdate.setNumberOfPages(newBook.getNumberOfPages());
+            bookToUpdate.setSection(newBook.getSection());
+            bookToUpdate.setVolume(newBook.getVolume());
+            //bookToUpdate.setAuthors(newBook.getAuthors());
+            bookToUpdate.setAvailable(newBook.getAvailable());
+
+            session.update(bookToUpdate);
+            transaction.commit();
+            session.close();
+        } else {
+            throw new CountBooksException("Book to update is not unique or does not exists!");
+        }
     }
 
     //UPDATE: nu mai e nevoie de metoda asta, pt ca la salvarea unui borrowing, se face automat update la book si subscriber

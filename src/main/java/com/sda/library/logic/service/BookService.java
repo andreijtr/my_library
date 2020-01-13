@@ -1,9 +1,11 @@
-package com.sda.library.service;
+package com.sda.library.logic.service;
 
 import com.sda.library.dto.BookDTO;
 import com.sda.library.entities.Author;
 import com.sda.library.entities.Book;
+import com.sda.library.exceptions.book.CountBooksException;
 import com.sda.library.repository.BookDAO;
+import com.sda.library.logic.convertor.BookConvertor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +23,12 @@ public class BookService {
     @Autowired
     private AuthorService authorService;
 
+    @Autowired
+    private BookConvertor bookConvertor;
+
     public List<BookDTO> findAllBooks() {
         List<Book> bookList = bookDAO.findAllBooks();
-        List<BookDTO> bookDTOList = convertBookListToBookDTOList(bookList);
+        List<BookDTO> bookDTOList = this.bookConvertor.convertBookListToBookDTOList(bookList);
         return bookDTOList;
     }
 
@@ -36,7 +41,7 @@ public class BookService {
             Author author = (Author) iterator.next();
             book = bookDAO.findByTitleAndVolumeAndAuthor(titleWords, volume, author);
         }
-        return convertBookToBookDTO(book);
+        return this.bookConvertor.convertBookToBookDTO(book);
     }
 
     //this method finds all books written by specified author
@@ -58,43 +63,19 @@ public class BookService {
 
     private List<BookDTO> findByAuthor(Author author) {
         List<Book> bookList = bookDAO.findByAuthor(author);
-        List<BookDTO> bookDTOList = convertBookListToBookDTOList(bookList);
+        List<BookDTO> bookDTOList = this.bookConvertor.convertBookListToBookDTOList(bookList);
         return bookDTOList;
     }
 
     //this method finds all available books(not borrowed)
     public List<BookDTO> findAvailable() {
         List<Book> bookList = bookDAO.findAllBooksAvailable();
-        List<BookDTO> bookDTOList = convertBookListToBookDTOList(bookList);
+        List<BookDTO> bookDTOList = this.bookConvertor.convertBookListToBookDTOList(bookList);
         return bookDTOList;
     }
 
-    //this method convert books to booksDTO in order to send them to the controller
-    private List<BookDTO> convertBookListToBookDTOList(List<Book> bookList) {
-        List<BookDTO> bookDTOList = new ArrayList<>();
-        for (Book book : bookList) {
-            BookDTO bookDTO = new BookDTO();
-            bookDTO.setTitle(book.getTitle());
-            bookDTO.setNumberOfPages(book.getNumberOfPages());
-            bookDTO.setVolume(book.getVolume());
-            bookDTO.setSection(book.getSection());
-            bookDTO.setAuthorsDTO(this.authorService.convertAuthorSetToAuthorDTOSet(book.getAuthors()));
-            bookDTO.setAvailable(book.getAvailable());
-            bookDTOList.add(bookDTO);
-        }
-        return bookDTOList;
-    }
-
-    public BookDTO convertBookToBookDTO(Book book) {
-        BookDTO bookDTO = new BookDTO();
-
-        bookDTO.setTitle(book.getTitle());
-        bookDTO.setNumberOfPages(book.getNumberOfPages());
-        bookDTO.setVolume(book.getVolume());
-        bookDTO.setSection(book.getSection());
-        bookDTO.setAuthorsDTO(this.authorService.convertAuthorSetToAuthorDTOSet(book.getAuthors()));
-        bookDTO.setAvailable(book.getAvailable());
-
-        return bookDTO;
+    public void updateBook(BookDTO bookDTO) throws CountBooksException {
+        Book book = bookConvertor.convertBookDTOToBook(bookDTO);
+        bookDAO.updateBook(book);
     }
 }

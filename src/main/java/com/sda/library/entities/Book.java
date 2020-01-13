@@ -6,9 +6,16 @@ import java.util.Objects;
 import java.util.Set;
 
 @NamedQueries({
-        @NamedQuery(name = "BOOKS_allBooks", query = "select b from Book b"),
-        @NamedQuery(name = "BOOKS_byAuthor", query = "select b from Book b join fetch b.authors where :author in elements(b.authors)"),
-        @NamedQuery(name = "BOOKS_allAvailable", query = "select b from Book b join fetch b.authors where b.available = true")
+        @NamedQuery(name = "BOOKS_allBooks",
+                    query = "select b from Book b join fetch b.authors"),
+        @NamedQuery(name = "BOOKS_byAuthor",
+                    query = "select b from Book b join fetch b.authors where :author in elements(b.authors)"),
+        @NamedQuery(name = "BOOKS_allAvailable",
+                    query = "select b from Book b join fetch b.authors where b.available = true"),
+        @NamedQuery(name = "BOOKS_count",
+                    query = "select count(b) from Book b where b.title = :title and b.volume = :volume"),
+        @NamedQuery(name = "BOOKS_byTitleAndVolume",
+                    query = "select b from Book b where b.title = :title and b.volume = :volume")
 })
 
 @Entity
@@ -17,7 +24,6 @@ public class Book {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "title")

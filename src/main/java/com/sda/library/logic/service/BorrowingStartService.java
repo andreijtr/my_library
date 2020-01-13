@@ -1,4 +1,4 @@
-package com.sda.library.service;
+package com.sda.library.logic.service;
 
 import com.sda.library.dto.BookDTO;
 import com.sda.library.dto.BookSubscriberBorrowingStartDTO;
@@ -6,12 +6,12 @@ import com.sda.library.dto.SubscriberDTO;
 import com.sda.library.entities.Book;
 import com.sda.library.entities.BookSubscriberBorrowingStart;
 import com.sda.library.entities.Subscriber;
+import com.sda.library.logic.convertor.BookConvertor;
 import com.sda.library.repository.BorrowingStartDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,8 +25,11 @@ public class BorrowingStartService {
     private BookService bookService;
 
     @Autowired
-    private SubscriberService subscriberService;
+    private BookConvertor bookConvertor;
 
+    @Autowired
+    private SubscriberService subscriberService;
+    
     public List<BookSubscriberBorrowingStartDTO> findAll() {
         List<BookSubscriberBorrowingStart> borrowingStartList = borrowingStartDAO.findAll();
         List<BookSubscriberBorrowingStartDTO> borrowingStartDTOList = new LinkedList<>();
@@ -38,7 +41,7 @@ public class BorrowingStartService {
             Date startBorrowingDate = borrowingStart.getStartBorrowingDate();
 
             //convert entities in DTOs
-            BookDTO bookDTO = bookService.convertBookToBookDTO(book);
+            BookDTO bookDTO = this.bookConvertor.convertBookToBookDTO(book);
             SubscriberDTO subscriberDTO = subscriberService.convertSubscriberToSubscriberDTO(subscriber);
 
             //create borrowingStartDTO

@@ -29,7 +29,7 @@ public class BorrowingStartDAO {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        String hql = "select b from BookSubscriberBorrowingStart b";
+        String hql = "select b from BookSubscriberBorrowingStart b inner join b.book.authors";
         Query query = session.createQuery(hql, BookSubscriberBorrowingStart.class);
         List<BookSubscriberBorrowingStart> borrowingStartList = query.getResultList();
 

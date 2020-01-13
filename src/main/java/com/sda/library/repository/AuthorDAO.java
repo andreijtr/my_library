@@ -17,8 +17,9 @@ public class AuthorDAO {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        String hql = "select a from Author a where lower(a.surname) like '%" + surname + "%'";
-        Query query = session.createQuery(hql, Author.class);
+        Query query = session.createNamedQuery("findBySurname", Author.class);
+        String queryParameter = "%" + surname + "%";
+        query.setParameter("surname", queryParameter);
         List<Author> authors = query.getResultList();
 
         transaction.commit();

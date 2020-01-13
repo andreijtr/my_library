@@ -1,8 +1,7 @@
 package com.sda.library.rest;
 
 import com.sda.library.dto.AuthorDTO;
-import com.sda.library.repository.AuthorDAO;
-import com.sda.library.service.AuthorService;
+import com.sda.library.logic.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

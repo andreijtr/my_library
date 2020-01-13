@@ -1,7 +1,7 @@
 package com.sda.library.rest;
 
 import com.sda.library.dto.BookSubscriberBorrowingStartDTO;
-import com.sda.library.service.BorrowingStartService;
+import com.sda.library.logic.service.BorrowingStartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

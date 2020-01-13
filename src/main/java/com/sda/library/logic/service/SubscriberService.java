@@ -1,4 +1,4 @@
-package com.sda.library.service;
+package com.sda.library.logic.service;
 
 import com.sda.library.dto.SubscriberDTO;
 import com.sda.library.entities.Subscriber;

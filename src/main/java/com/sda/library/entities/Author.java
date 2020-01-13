@@ -5,13 +5,17 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@NamedQueries(
+        @NamedQuery(name = "findBySurname",
+                    query = "select a from Author a where lower(a.surname) like :surname")
+)
+
 @Entity
 @Table(name = "authors")
 public class Author {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "first_name")
